@@ -1,0 +1,20 @@
+/*Designed By : Team 11
+* DataNormalizer.hdl .. Normalizes the output manitssa just after multiplication in 16 bit floating Point Multiplication
+* Input : Pm[16] = Mantissa just after multiplication
+* Output : out[7] = normalized mantissa (final mantissa)
+*          GB = bit that is useful to update exponent of result multiplication
+*/
+CHIP DataNormalizer{
+    IN Pm[16];
+    OUT out[7], GB;
+
+    PARTS:
+    //if Pm[15] = 1 then we need to shift mantissa by 1 digit to right.Then,1.Pm[8..14] is final mantissa
+    //else 1.Pm[7..13] is final mantisaa .Note: one of Pm[15] and Pm[14] is always 1(or both).
+    Mux2Way7Bit(x1 = Pm[8..14], x0 = Pm[7..13], s0 = Pm[15] , y = out);
+    
+    //Bit to update exponent of result 
+    //if Pm[15] = 1 exponent increase by 1 .Else no change.
+    And(a=Pm[15], b=true, out=GB);
+    
+}

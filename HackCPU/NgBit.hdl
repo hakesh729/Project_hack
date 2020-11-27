@@ -1,0 +1,7 @@
+//Returns 1 if given 16 bit number is negative ie..MSB is 1.OtherWise 0.
+CHIP NgBit {
+    IN a[16];
+    OUT out;
+    PARTS:
+    And(a = true,b = a[15],out = out);
+}

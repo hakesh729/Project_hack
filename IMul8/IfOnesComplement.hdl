@@ -1,0 +1,51 @@
+/**
+ * CHIP NAME :  IfOnesComplement
+ * 
+ * DESCRIPTION : Generates 1's complement of a number depending on the control bit cb
+ * 
+ * USE : When subtracting numbers , we generate negative of a number. For that we need 2's complement which can be 
+   calculated by adding 1 to the least significant position of 1's complement.
+ * 
+ * LOGIC :
+   z = y XOR cb ( Each bit of y is XOR with cb)
+**/
+
+CHIP IfOnesComplement{
+    IN y[16], cb;
+    OUT z[16];
+
+
+    PARTS:
+    Xor(a=y[0], b=cb, out=z[0]);
+    
+    Xor(a=y[1], b=cb, out=z[1]);
+    
+    Xor(a=y[2], b=cb, out=z[2]);
+    
+    Xor(a=y[3], b=cb, out=z[3]);
+    
+    Xor(a=y[4], b=cb, out=z[4]);
+    
+    Xor(a=y[5], b=cb, out=z[5]);
+    
+    Xor(a=y[6], b=cb, out=z[6]);
+    
+    Xor(a=y[7], b=cb, out=z[7]);
+    
+    Xor(a=y[8], b=cb, out=z[8]);
+    
+    Xor(a=y[9], b=cb, out=z[9]);
+    
+    Xor(a=y[10], b=cb, out=z[10]);
+    
+    Xor(a=y[11], b=cb, out=z[11]);
+    
+    Xor(a=y[12], b=cb, out=z[12]);
+
+    Xor(a=y[13], b=cb, out=z[13]);
+
+    Xor(a=y[14], b=cb, out=z[14]);
+
+    Xor(a=y[15], b=cb, out=z[15]);
+
+}

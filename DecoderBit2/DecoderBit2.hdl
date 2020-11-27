@@ -1,0 +1,26 @@
+/*2-to-4 binary decoder ... Decodes the 2-bit and activates single output line*/
+/*Input:2 (x1,x0) input lines*/
+/*output: (y3, y2, y1, y0) (only 1 active output line out of 4 output lines)*/
+/*
+    if  x1=0 x0=0   =>  y3=1 (remaining outputs are zero)
+        x1=0 x0=1  =>  y2=1 (remaining outputs are zero)
+        x1=1 x0=0  =>  y1=1 (remaining outputs are zero)    
+        x1=1 x0=1  =>  y0=1 (remaining outputs are zero)
+*/
+
+CHIP DecoderBit2 {
+
+    IN x1,x0;
+    OUT y3,y2,y1,y0;
+
+    //INTERNAL PINS:nota = negation of x1 and notb = negation of x0
+    PARTS:                     
+    Not(in=x1, out=nota);
+    Not(in=x0, out=notb);
+
+    And(a=nota, b=notb, out=y3);    // y3 = (~x1).(~x0)
+    And(a=nota, b=x0, out=y2);      //y2 = (~x1).(x0)
+    And(a=x1, b=notb, out=y1);      //y1 = (x1).(~x0)
+    And(a=x1, b=x0, out=y0);        //y0 = (x1).(x0)
+    
+}

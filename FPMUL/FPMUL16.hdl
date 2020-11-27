@@ -1,0 +1,35 @@
+/**
+ * Designed By : Team 11
+ * FPMul.hdl .. Performes Multiplication of 16 bit floating point numbers
+ * Input : x[16],y[16] = two operands
+ * Output : z[16] = result of multiplication
+ * Note : To get rid of overflow , 128<=Xe + Ye <= 390 as true exponent of Z should lie in range -126 to 127
+ *
+ * Other Chips : 1. ManissaMUL .. calculates multiplicaation of mantissa (1.xm * 1.ym)
+ *               2. DataNormalizer .. mantissa shifter to get Normalised mantissa as result (and generates GB bit)
+ *               3. ExpMul ... calculates exponent of resultant exponent (after mantissa shifting) (Ze = Xe + Ye - Bias + GB).
+ *               4. sign bit of z = Xs xor Ys
+ *
+ */
+CHIP FPMUL16{
+    IN X[16], Y[16];
+    OUT Z[16];
+
+    PARTS:
+    //Mantissa Multiplier
+    //Xm[0] = 1 since the mantissa is 1.Xm
+    //Ym[0] = 1 since the mantissa is 1.Ym
+    MantissaMUL(a[7] = true , a[0..6] = X[0..6],b[7] = true, b[0..6] = Y[0..6] , out = Pm );
+    
+    // // Data Normalization
+    // Mux2Way7Bit(x1 = Pm[14..8], x0 = Pm[13..7], s0 = Pm[15] , y = Z[9..15]);
+    DataNormalizer(Pm = Pm , out  = Z[0..6] , GB = GB);
+    
+    //Exponent Ze calculation
+    ExpMul(x=X[7..14], y=Y[7..14], p15 = GB , z = Z[7..14]);
+
+    //Sign Bit = Xs XOR Ys
+    Xor(a=X[15], b=Y[15], out= Z[15]);
+
+
+}

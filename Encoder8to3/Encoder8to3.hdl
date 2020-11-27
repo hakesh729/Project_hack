@@ -1,0 +1,60 @@
+/* A 8-to-3 encoder has 3 outputs in correspondance to 2^3 inputs. 
+   It thus reduces the number of transmission lines and only one of the inputs become high(logic state 1) at a time.
+   That is, if there are 2^n input lines, and at most one of them will ever be high, the binary code of this line is produced on the n-bit output lines. */
+
+ CHIP Encoder8to3
+{
+  IN x0, x1, x2, x3, x4, x5, x6, x7;
+  OUT y2, y1, y0;
+
+  PARTS:
+  Not(in=x0, out=notx0);
+  Not(in=x1, out=notx1);
+  Not(in=x2, out=notx2);
+  Not(in=x3, out=notx3);
+  Not(in=x4, out=notx4);
+  Not(in=x5, out=notx5);
+  Not(in=x6, out=notx6);
+  Not(in=x7, out=notx7);
+
+  And(a=notx0, b=notx1, out=w1);
+  And(a=x2, b=notx3, out=w2);
+  And(a=notx2, b=x3, out=w3);
+  And(a=notx2, b=notx3, out=w4);
+  And(a=notx0, b=x1, out=w5);
+  And(a=notx4, b=notx5, out=w6);
+  And(a=x6, b=notx7, out=w7);
+  And(a=notx6, b=x7, out=w8);
+  And(a=notx6, b=notx7, out=w9);
+  And(a=notx4, b=x5, out=w10);
+  And(a=x4, b=notx5, out=w11);
+
+  And(a=w1, b=w2, out=u1);
+  And(a=w1, b=w3, out=u2);
+  And(a=w5, b=w4, out=u3);
+  And(a=w1, b=w4, out=u4);
+  And(a=w6, b=w7, out=u5);
+  And(a=w6, b=w8, out=u6);
+  And(a=w10, b=w9, out=u7);
+  And(a=w6, b=w9, out=u8);
+  And(a=w9, b=w11, out=u9);
+
+  And(a=u1, b=u8, out=v1);
+  And(a=u2, b=u8, out=v2);
+  And(a=u3, b=u8, out=v3);
+  And(a=u5, b=u4, out=v4);
+  And(a=u6, b=u4, out=v5);
+  And(a=u7, b=u4, out=v6);
+  And(a=u9, b=u4, out=v7);
+
+  Or(a=v1, b=v2, out=z1);
+  Or(a=v4, b=v5, out=z2);
+  Or(a=v3, b=v2, out=z3);
+  Or(a=v6, b=v5, out=z4);
+  Or(a=v7, b=v6, out=z5);
+
+  Or(a=z5, b=z2, out=y2);
+  Or(a=z1, b=z2, out=y1);
+  Or(a=z3, b=z4, out=y0);
+}
+

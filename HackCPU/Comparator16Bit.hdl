@@ -1,0 +1,55 @@
+/*  
+ * if for i=0,1...,15 x[i] = y[i] then z = 1
+ *
+ * else z = 0  
+ */
+    
+
+CHIP Comparator16Bit
+{
+  IN x[16], y[16];
+  OUT z;
+
+  PARTS:
+  Xor(a=x[0], b=y[0], out=w1);
+  Xor(a=x[1], b=y[1], out=w2);
+  Xor(a=x[2], b=y[2], out=w3);
+  Xor(a=x[3], b=y[3], out=w4);
+  Xor(a=x[4], b=y[4], out=w5);
+  Xor(a=x[5], b=y[5], out=w6);
+  Xor(a=x[6], b=y[6], out=w7);
+  Xor(a=x[7], b=y[7], out=w8);
+  Xor(a=x[8], b=y[8], out=w9);
+  Xor(a=x[9], b=y[9], out=w10);
+  Xor(a=x[10], b=y[10], out=w11);
+  Xor(a=x[11], b=y[11], out=w12);
+  Xor(a=x[12], b=y[12], out=w13);
+  Xor(a=x[13], b=y[13], out=w14);
+  Xor(a=x[14], b=y[14], out=w15);
+  Xor(a=x[15], b=y[15], out=w16);
+
+  Not(in=w1, out=notw1);
+  Not(in=w2, out=notw2);
+  Not(in=w3, out=notw3);
+  Not(in=w4, out=notw4);
+  Not(in=w5, out=notw5);
+  Not(in=w6, out=notw6);
+  Not(in=w7, out=notw7);
+  Not(in=w8, out=notw8);
+  Not(in=w9, out=notw9);
+  Not(in=w10, out=notw10);
+  Not(in=w11, out=notw11);
+  Not(in=w12, out=notw12);
+  Not(in=w13, out=notw13);
+  Not(in=w14, out=notw14);
+  Not(in=w15, out=notw15);
+  Not(in=w16, out=notw16);
+
+  And4(a=notw1, b=notw2, c=notw3, d=notw4, out=notw1.notw2.notw3.notw4);
+  And4(a=notw5, b=notw6, c=notw7, d=notw8, out=notw5.notw6.notw7.notw8);
+  And4(a=notw9, b=notw10, c=notw11, d=notw12, out=notw9.notw10.notw11.notw12);
+  And4(a=notw13, b=notw14, c=notw15, d=notw16, out=notw13.notw14.notw15.notw16);
+
+  And4(a=notw1.notw2.notw3.notw4, b=notw5.notw6.notw7.notw8, c=notw9.notw10.notw11.notw12, d=notw13.notw14.notw15.notw16, out=z);
+
+}

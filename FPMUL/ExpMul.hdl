@@ -1,0 +1,37 @@
+//Designer : Hakesh (cs19b017) @ Team 11
+//ExpMul.hdl .. Calculates Final exponent in Floating point Multiplication. 
+//Input: x[8],y[8] =Biased exponents of operands (Bias = 127)
+//       p15 = Most Significant bit of mantissa obtained just after multiplication.
+//Method : 
+// 1 . calculates x + y = XeYe (using 16 Bit 4bit based ClA Adder/Subtrater,Which was already made by us)
+// 2 . Finds final exponent if no mantissa shifting is required ie.. Ze1 = XeYe - 127(bias)
+// 3 . Also calculates final Exponent if mantissa shifting is required (ie.. Ze2 = XeYe - 127 + 1)
+//NOTE : for the final exponent of Ze to lie in 16-bit floating point exponent range (ie..-126 to 127)
+//          => 128 <= Xe + Ye <=390
+CHIP ExpMul {
+    //x,y,z represents Xe,Ye,Ze respectively.
+    IN x[8],y[8],p15;
+    OUT z[8];
+
+    PARTS:
+    //Adding Biased Exponets
+    //x + y = XeYe which is 9-Bit
+    //No overflow at all.
+    CLA16(x[0..7] = x,x[8..15] = false,y[0..7] = y,y[8..15] = false,S = false,c0 = false,out[0..8] = XeYe,out[9..15] = waste0,OF = waste1);
+
+    //Converting above result into biased Exponent 
+    //Ze = XeYe - 127 
+    //That would be the resultant exponent for FP MUl if p15 = 0
+    //bias = 127 = 1111111 (7 true bits) .So to generate bus of 7 ones  we use BitCopy16 chip
+    BitCopy16(a = true,out[0..6] = bias);
+    BLS12(x[0..8] = XeYe,x[9..11] = false,y[0..6] = bias,y[7..11] = false,out[0..7] = Ze1);
+    //The following is resultant exponent for FP MUl if p15 = 1
+    //Ze = XeYe - 126
+    //Ie..Exponent changing while mantissa shifting.
+    //Here we use bias2 = bias - 1 = 126 = 1111110 
+    BitCopy16(a = true,out[0..5] = bias2);
+    BLS12(x[0..8] = XeYe,x[9..11] = false,y[0] = false,y[1..6] = bias2,y[7..11] = false,out[0..7] = Ze2);
+
+    //Giving out required Exponent according to p15 bit.
+    Mux2Way8Bit(x0 = Ze1,x1 = Ze2,s0 = p15,y = z);
+}

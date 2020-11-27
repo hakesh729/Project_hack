@@ -1,0 +1,46 @@
+/*Designed by : Hakesh (cs19b017) @ Team 11
+HackALU.hdl = Performes all ALU functions on 16 Bit numbers according to given opcode inputs
+
+Input : x[16],y[16] - the operands
+Control Signal INPUTS : zx - zero the x input 
+                        nx - negate the x input
+                        zy - zero the y input
+                        ny - negate the y input
+                        f = 1 for x+y , 0 for x&y
+                        no = negate the ouput
+OUTPUT : out[16]
+Status Bits : zr = 1 if out = 0
+              ng = 1 if out < 0
+
+User Built Chips :
+ 1 . BitCopy16 .. Takes a single bit and return 16 bit Bus of that bit
+ 2. Xor16 .. Performes xor operation on two 16 bit numbers (bit by bit)
+ 3. Comparator16 .. Compares two 16 bit numbers .Return 1 if equal or 0 if not.
+ 4 . NgBit .. Return 1 if final output is negative ,else returns 0.
+ (all other chips are inbuilt)
+
+ NOTE : overflow is NOT handled or detected.
+        We can perform various operations like various operations of ALU using different combinations of 
+        control signals like addition , subtraction , and , or , ....
+*/
+
+CHIP HackALU {
+    IN x[16],y[16],zx,nx,zy,ny,f,no;
+    OUT out[16],zr,ng;
+
+    PARTS:
+    Mux16(a=x, b=false, sel=zx, out=tempX);
+    Mux16(a=y, b=false, sel=zy, out=tempY);
+    BitCopy16(a = nx,out = Nx);
+    Xor16(x = Nx,y = tempX,z = p);
+    BitCopy16(a = ny,out = Ny);
+    Xor16(x = Ny,y = tempY,z = q);
+    Add16(a = p,b = q,out = sum);
+    And16(a = p,b = q,out = PandQ);
+    Mux16(a = PandQ,b = sum,sel = f,out = PreOut1);
+    BitCopy16(a = no,out = No);
+    Xor16(x = No,y = PreOut1,z = out1);
+    NgBit(a = out1,out = ng);
+    Comparator16Bit(x = out1,y = false,z = zr);
+    And16(a = out1,b = true,out = out);
+}

@@ -1,0 +1,66 @@
+//Designer : Hakesh (CS19B017) @ Team 11
+//only useful for  Floating Point 16 bit Multiplier.
+//BLS4 ... 4-bit Borrow Lookahead Subtracter
+//Self made gates used in this chip : And8Way(similar to Or8Way which is inbuilt chip)
+//Input : two 4 bit numbers - x[4] and y[4] 
+//          And c0 = 0 for subtraction (initial borrow)
+//Ouput: Subtraction as out[4] and all borrow bits c[5] (borrow bits )
+//NOTE : In the code,'c' related variables names represents borrow bits.
+
+CHIP BLS4 {
+    IN x[4],y[4],c0;            //c0 initial borrow bit which is obivously 0.
+    OUT out[4],c[5];
+
+    PARTS:
+
+    Not16(in[0..3] = x ,out[0..3] = nx); //Generates negation for  x
+
+    //Generating Propagating terms pi for i=0 1 2 3
+    //pi = ~xi + yi for i = 0 1 2 3
+    Or16(a[0..3] = nx,b[0..3] = y,out[0] = p0,out[1] = p1,out[2] = p2,out[3] = p3);
+
+    //Generating Generating Terms gi for i=0 1 2 3
+    //gi = ~xi.yi for i = 0 1 2 3
+    And16(a[0..3] = nx,b[0..3] = y,out[0] = g0,out[1] = g1,out[2] = g2,out[3] = g3);
+
+    //Generating Borrow bits ci ie..c1 c2 c3 c4
+    //c1 = g0 + p0.c0
+    And(a = p0,b = c0,out = c11);
+    Or(a = g0,b = c11,out = c1);
+
+    //c2 = g1 + p1.g0 + p1.p0.c0
+    And8Way(in[0] = p0,in[1] = p1,in[2] = c0,in[3..7] = true,out = c22);
+    And(a = p1,b = g0,out = c21);
+    Or8Way(in[0] = g1,in[1] = c21,in[2] = c22,in[3..7] = false,out = c2);
+
+    //c3 = g2 + p2.g1 + p2.p1.g0 + p2.p1.p0.c0
+    And8Way(in[0] = p0,in[1] = p1,in[2] = p2,in[3] = c0,in[4..7] = true,out = c33);
+    And8Way(in[0] = p1,in[1] = p2,in[2] = g0,in[3..7] = true,out = c32);
+    And(a = p2,b = g1,out = c31);
+    Or8Way(in[0] = g2,in[1] = c31,in[2] = c32,in[3] = c33,in[4..7] = false,out = c3);
+
+    //c4 = g3 + p3.g2 + p3.p2.p1.g0 + p3.p2.p1.p0.c0
+    And8Way(in[0] = p0,in[1] = p1,in[2] = p2,in[3] = p3,in[4] = c0,in[5..7] = true,out = c44);
+    And8Way(in[0] = p1,in[1] = p2,in[2] = p3,in[3] = g0,in[4..7] = true,out = c43);
+    And8Way(in[0] = p2,in[1] = p3,in[2] = g1,in[3..7] = true,out = c42);
+    And(a = p3,b = g2,out = c41);
+    Or8Way(in[0] = g3,in[1] = c41,in[2] = c42,in[3] = c43,in[4] = c44,in[5..7] = false,out = c4);
+
+    //generating subtract bits
+    //out[i] = x[i] xor y[i] xor ci
+    Xor(a = x[0],b = y[0],out = out00);
+    Xor(a = out00,b = c0,out = out[0]);
+
+    Xor(a = x[1],b = y[1],out = out10);
+    Xor(a = out10,b = c1,out = out[1]);
+
+    Xor(a = x[2],b = y[2],out = out20);
+    Xor(a = out20,b = c2,out = out[2]);
+
+    Xor(a = x[3],b = y[3],out = out30);
+    Xor(a = out30,b = c3,out = out[3]);
+
+    //returning borrow bits as output
+    And16(a[0..4] = true,b[0] = c0,b[1] = c1,b[2] = c2,b[3] = c3,b[4] = c4,out[0..4] = c);
+
+}

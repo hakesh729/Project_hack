@@ -1,0 +1,25 @@
+/* A 4-to-2 encoder has 2 outputs in correspondance to 2^2 inputs. 
+   It thus reduces the number of transmission lines and only one of the inputs become high(logic state 1) at a time.
+   That is, if there are 2^n input lines, and at most one of them will ever be high, the binary code of this line is produced on the n-bit output lines. */
+
+CHIP Encoder4to2
+{
+  IN x0, x1, x2, x3;
+  OUT y1, y0;
+
+  PARTS:
+  Not(in=x0, out=notx0);
+  Not(in=x1, out=notx1);
+  Not(in=x2, out=notx2);
+  Not(in=x3, out=notx3);
+  And(a=notx0, b=notx1, out=w1);
+  And(a=x2, b=notx3, out=w2);
+  And(a=notx2, b=x3, out=w3);
+  And(a=notx2, b=notx3, out=w4);
+  And(a=notx0, b=x1, out=w5);
+  And(a=w1, b=w2, out=u1);
+  And(a=w1, b=w3, out=u2);
+  And(a=w5, b=w4, out=u3);
+  Or(a=u1, b=u2, out=y1);
+  Or(a=u3, b=u2, out=y0);
+}

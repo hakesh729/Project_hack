@@ -1,0 +1,57 @@
+//Designed by Team 11
+//CLA16.hdl ... Add/subtract two 16-bit numbers (signed/unsigned) - x[16],y[16]
+//Input : S = Indicates 1 if numbers are signed ,else 0 for Unsigned numbers
+//          x[16],y[16] = 16 bit operands(binaryy format only)
+//          c0 = initial carry bit (0 for addition; 1 for subtraction)
+//Output : sum of x and y in binary format 
+//          OF = overflow bit (1 for overflow ;0 for no overflow and for Unsigned Subtraction)
+
+
+
+CHIP CLA16 {
+    IN S,x[16],y[16],c0;
+    OUT out[16],OF;
+
+    PARTS:
+    //Toggling each y thru xor gates  for subtraction ie..c0 = 1
+    Xor(a = y[0],b = c0,out = y0);
+    Xor(a = y[1],b = c0,out = y1);
+    Xor(a = y[2],b = c0,out = y2);
+    Xor(a = y[3],b = c0,out = y3);
+
+    Xor(a = y[4],b = c0,out = y4);
+    Xor(a = y[5],b = c0,out = y5);
+    Xor(a = y[6],b = c0,out = y6);
+    Xor(a = y[7],b = c0,out = y7);
+
+    Xor(a = y[8],b = c0,out = y8);
+    Xor(a = y[9],b = c0,out = y9);
+    Xor(a = y[10],b = c0,out = y10);
+    Xor(a = y[11],b = c0,out = y11);
+
+    Xor(a = y[12],b = c0,out = y12);
+    Xor(a = y[13],b = c0,out = y13);
+    Xor(a = y[14],b = c0,out = y14);
+    Xor(a = y[15],b = c0,out = y15);    
+
+    //Contructing 16 bit adder/subtractor using 4-bit CLA adder
+    CLA4(x[0..3] = x[0..3],y[0] = y0,y[1] = y1,y[2] = y2,y[3] = y3,c0 = c0,out[0..3] = out[0..3],c[4] = c4);
+    CLA4(x[0..3] = x[4..7],y[0] = y4,y[1] = y5,y[2] = y6,y[3] = y7,c0 = c4,out[0..3] = out[4..7],c[4] = c8);
+    CLA4(x[0..3] = x[8..11],y[0] = y8,y[1] = y9,y[2] = y10,y[3] = y11,c0 = c8,out[0..3] = out[8..11],c[4] = c12);
+    CLA4(x[0..3] = x[12..15],y[0] = y12,y[1] = y13,y[2] = y14,y[3] = y15,c0 = c12,out[0..3] = out[12..15],c[3] = c15,c[4] = c16);
+
+    //Overflow bit generation
+    //OF =(~S).c16.(~c0) + (S).(c16 xor c15).
+    //Recall Unsigned Subtraction => OF = 0.And S = 0 => Unsigned
+    Xor(a = c15,b = c16,out = of);
+    And(a = S,b = of,out = of1);
+
+    Not(in = S,out = notS);
+    Not(in = c0,out = notc0);
+    And(a = notS,b = c16,out = Of);
+    And(a = notc0,b = Of,out = of2);
+
+    Or(a = of1,b = of2,out = OF);
+
+
+}

@@ -1,0 +1,62 @@
+/*
+DeMux8way2bit chip is 2 bit 1-to-8 DeMux 
+Input : Data line = x (2 bit)
+        select lines = s2 , s1 , s0
+Output : 8 output lines y7 t0 y0 (2 bit)
+         Only one of them will get active according to given Select lines input 
+         Ex : if s2 = 1;s1 = 0 ;s0 = 1 => y2 = x 
+         
+         s
+*/
+CHIP DeMux8way2bit {
+    IN x[2], s0, s1, s2;
+    OUT y7[2], y6[2], y5[2], y4[2], y3[2], y2[2], y1[2], y0[2];
+
+PARTS:
+                                            //Follow the comments to get on Design of chip
+Not(in = s2,out = nots2);                   //nots2 = ~s2
+Not(in = s1,out = nots1);                   //nots1 = ~s1
+Not(in = s0,out = nots0);                   //nots0 = ~s0
+
+And(a = nots1,b = nots0,out = temp1);       //temp1 = ~s1.~s0
+And(a = nots1,b = s0,out = temp2);          //temp2 = ~s1.s0
+And(a = s1,b = nots0,out = temp3);          //temp3 = s1.~s0
+And(a = s1,b = s0,out = temp4);             //temp4 = s1.s0
+
+And(a = nots2,b = temp1,out = sy7);         //sy7 = ~s2.~s1.~s0
+And(a = nots2,b = temp2,out = sy6);         //sy6 = ~s2.~s1.s0
+And(a = nots2,b = temp3,out = sy5);         //sy5 = ~s2.s1.~s0
+And(a = nots2,b = temp4,out = sy4);         //sy4 = ~s2.s1.s0
+And(a = s2,b = temp1,out = sy3);            //sy3 = s2.~s1.~s0
+And(a = s2,b = temp2,out = sy2);            //sy2 = s2.~s1.s0
+And(a = s2,b = temp3,out = sy1);            //sy1 = s2.s1.~s0
+And(a = s2,b = temp4,out = sy0);            //sy0 = s2.s1.s0
+
+And(a = sy7,b = x[0],out = y7[0]);          //y7 = ~s2.~s1.~s0.x (bit wise)
+And(a = sy7,b = x[1],out = y7[1]);
+
+And(a = sy6,b = x[0],out = y6[0]);          //y6 = ~s2.~s1.s0.x (bit wise)
+And(a = sy6,b = x[1],out = y6[1]);
+
+And(a = sy5,b = x[0],out = y5[0]);          //y5 = ~s2.s1.~s0.x (bit wise)
+And(a = sy5,b = x[1],out = y5[1]);
+
+And(a = sy4,b = x[0],out = y4[0]);          //y4 = ~s2.s1.s0.x (bit wise)
+And(a = sy4,b = x[1],out = y4[1]);
+
+And(a = sy3,b = x[0],out = y3[0]);          //y3 = s2.~s1.~s0.x (bit wise)
+And(a = sy3,b = x[1],out = y3[1]);
+
+And(a = sy2,b = x[0],out = y2[0]);          //y2 = s2.~s1.s0.x (bit wise)
+And(a = sy2,b = x[1],out = y2[1]);
+
+And(a = sy1,b = x[0],out = y1[0]);          //y1 = s2.s1.~s0.x (bit wise)
+And(a = sy1,b = x[1],out = y1[1]);
+
+And(a = sy0,b = x[0],out = y0[0]);          //y0 = s2.s1.s0.x (bit wise)
+And(a = sy0,b = x[1],out = y0[1]);
+
+
+    
+
+}

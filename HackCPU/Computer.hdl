@@ -1,0 +1,35 @@
+/*
+Designed by : K Sathvik Joel (CS19B025) @ Team 11
+Chip Name: Computer             # Topmost chip in the Hack platform
+
+Input: reset
+
+Function: 
+1. When reset is 0, the program stored in the computer's
+ROM executes. 
+
+2. When reset is 1, the execution of the
+program restarts. 
+
+3. Thus, to start a program's
+execution, reset must be pushed "up" (1) and then
+"down" (0).
+
+*/
+
+
+CHIP Computer{
+
+    IN reset;
+
+    PARTS:
+
+    
+    Memory(in=outM, load=writeM, address=addressM, out=inM);
+    
+    ROM32K(address=pc, out=instruction);
+
+    CPU2300(inM=inM, instruction=instruction, reset=reset, outM=outM, writeM=writeM, addressM=addressM, pc=pc);
+    
+    
+}

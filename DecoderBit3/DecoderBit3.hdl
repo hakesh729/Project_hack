@@ -1,0 +1,48 @@
+/*3-to-8 way binary decoder...Decode 3 bits and activate only one output line*/
+/*Input:3 input lines (x2, x1, x0)*/
+/*output:(y7, y6, y5, y4, y3, y2, y1, y0)-only 1 active output line out of 8 output lines*/
+
+CHIP DecoderBit3 {
+
+    IN x2,x1,x0;
+    OUT y7,y6,y5,y4,y3,y2,y1,y0;
+
+    PARTS:
+    Not(in=x2, out=notc);                       //Internal pin "notc" = (~x2)
+    Not(in=x1, out=notb);                       //Internal pin "notb" = (~x1)
+    Not(in=x0, out=nota);                       //Internal pin "nota" = (~x0)
+    
+    And(a=nota, b=notb, out=tempY0);            //Internal pin "tempY0" = (~x1).(~x0)
+
+    And(a=x0, b=notb, out=tempY1);              //Internal pin "tempY1" = (~x1).(x0)
+
+    And(a=nota, b=x1, out=tempY2);              //Internal pin "tempY2" = (x1).(~x0)
+
+    And(a=x1, b=x0, out=tempY3);                //Internal pin "tempY3" = (x1).(x0)
+
+    And(a=tempY0, b=notc, out=y0);              //y0 = (~x2).(~x1).(~x0)
+
+    
+    And(a=tempY1, b=notc, out=y1);              //y0 = (~x2).(~x1).(x0)
+
+    
+    And(a=tempY2, b=notc, out=y2);              //y0 = (~x2).(x1).(~x0)
+
+    
+    And(a=tempY3, b=notc, out=y3);              //y0 = (~x2).(x1).(x0)
+
+    
+    And(a=tempY0, b=x2, out=y4);                 //y0 = (x2).(~x1).(~x0)
+
+    
+    And(a=tempY1, b=x2, out=y5);                  //y0 = (x2).(~x1).(x0)
+
+    
+    And(a=tempY2, b=x2, out=y6);                 //y0 = (x2).(x1).(~x0)
+
+    
+    And(a=tempY3, b=x2, out=y7);                  //y0 = (x2).(x1).(x0)
+
+    
+    
+}

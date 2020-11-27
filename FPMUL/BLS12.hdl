@@ -1,0 +1,23 @@
+//Designer : Hakesh(CS19B017) @ Team 11
+//only useful for  Floating Point 16 bit Multiplier.
+//BLS12.hdl ... Subtract two 12-bit numbers = x[12] - y[12] using 
+//              using 3 4-bit BLS chip(BLS4.hdl).
+//Input : 
+//          x[12],y[12] = 12 bit operands
+//Output : subtraction of two 12 bits  x , y (ie x - y)
+//          
+
+
+CHIP BLS12 {
+    IN x[12],y[12];
+    OUT out[12];
+
+    PARTS:
+
+    //Contructing 12 bit Subtractor using 4-bit BLS
+    //c4,c8,c12 represent last borrow bit from each BLS4
+    BLS4(x[0..3] = x[0..3],y[0..3] = y[0..3],c0 = false,out[0..3] = out[0..3],c[4] = c4);
+    BLS4(x[0..3] = x[4..7],y[0..3] = y[4..7],c0 = c4,out[0..3] = out[4..7],c[4] = c8);
+    BLS4(x[0..3] = x[8..11],y[0..3] = y[8..11],c0 = c8,out[0..3] = out[8..11],c[4] = c12);
+
+}
