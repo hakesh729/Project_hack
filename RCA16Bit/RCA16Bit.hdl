@@ -1,0 +1,72 @@
+/*  Full-adder:  designed to add three bits
+
+    Ripple Carry Adder is designed to add two n-bit numbers using n Full-adders
+
+    There are two n-bit numbers x and y. xk,yk are fed as input to (k+1)th Full-adder, the third input is the carry from the previous Full-adder.
+
+    Here n = 16   */
+
+CHIP RCA16Bit
+{
+  IN x[16], y[16], cb, S;
+  OUT z[16], OF;
+
+  PARTS:
+    Xor(a=y[0], b=cb, out=w0);
+    Xor(a=y[1], b=cb, out=w1);
+    Xor(a=y[2], b=cb, out=w2);
+    Xor(a=y[3], b=cb, out=w3);
+    Xor(a=y[4], b=cb, out=w4);
+    Xor(a=y[5], b=cb, out=w5);
+    Xor(a=y[6], b=cb, out=w6);
+    Xor(a=y[7], b=cb, out=w7);         // 2's complement form of y if cb=1
+    Xor(a=y[8], b=cb, out=w8);
+    Xor(a=y[9], b=cb, out=w9);
+    Xor(a=y[10], b=cb, out=w10);
+    Xor(a=y[11], b=cb, out=w11);
+    Xor(a=y[12], b=cb, out=w12);
+    Xor(a=y[13], b=cb, out=w13);
+    Xor(a=y[14], b=cb, out=w14);
+    Xor(a=y[15], b=cb, out=w15);
+
+   Carry(a=x[0], b=w0, c=cb, out=c1);
+   Carry(a=x[1], b=w1, c=c1, out=c2);
+   Carry(a=x[2], b=w2, c=c2, out=c3);
+   Carry(a=x[3], b=w3, c=c3, out=c4);
+   Carry(a=x[4], b=w4, c=c4, out=c5);
+   Carry(a=x[5], b=w5, c=c5, out=c6);
+   Carry(a=x[6], b=w6, c=c6, out=c7);
+   Carry(a=x[7], b=w7, c=c7, out=c8);      // c[i+1] = x[i]y[i] + y[i]c[i] + c[i]x[i]  
+   Carry(a=x[8], b=w8, c=c8, out=c9);
+   Carry(a=x[9], b=w9, c=c9, out=c10);
+   Carry(a=x[10], b=w10, c=c10, out=c11);
+   Carry(a=x[11], b=w11, c=c11, out=c12);
+   Carry(a=x[12], b=w12, c=c12, out=c13);
+   Carry(a=x[13], b=w13, c=c13, out=c14);
+   Carry(a=x[14], b=w14, c=c14, out=c15);
+   Carry(a=x[15], b=w15, c=c15, out=c16);
+
+   Xor2(a=x[0], b=w0, c=cb, out=z[0]);
+   Xor2(a=x[1], b=w1, c=c1, out=z[1]);
+   Xor2(a=x[2], b=w2, c=c2, out=z[2]);
+   Xor2(a=x[3], b=w3, c=c3, out=z[3]);
+   Xor2(a=x[4], b=w4, c=c4, out=z[4]);
+   Xor2(a=x[5], b=w5, c=c5, out=z[5]);
+   Xor2(a=x[6], b=w6, c=c6, out=z[6]);
+   Xor2(a=x[7], b=w7, c=c7, out=z[7]);       // s[i] = x[i] xor y[i] xor c[i]
+   Xor2(a=x[8], b=w8, c=c8, out=z[8]);
+   Xor2(a=x[9], b=w9, c=c9, out=z[9]);
+   Xor2(a=x[10], b=w10, c=c10, out=z[10]);
+   Xor2(a=x[11], b=w11, c=c11, out=z[11]);
+   Xor2(a=x[12], b=w12, c=c12, out=z[12]);
+   Xor2(a=x[13], b=w13, c=c13, out=z[13]);
+   Xor2(a=x[14], b=w14, c=c14, out=z[14]);
+   Xor2(a=x[15], b=w15, c=c15, out=z[15]);
+
+   DetectOverFlow(c15=c15, c16=c16, cb=cb, S=S, OF=OF);
+
+}
+   
+
+
+

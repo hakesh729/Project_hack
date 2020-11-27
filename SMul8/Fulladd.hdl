@@ -1,0 +1,21 @@
+ //Designed by Team11
+ //Fulladd ... FullAdder 
+ //Input : x,y = bits to be added
+//          c = initial carry bit
+//output:    sum = sum bit
+//          carry = carrybit from last
+
+CHIP Fulladd {
+    IN a,b,c;
+    OUT sum,carry;
+
+    PARTS:
+    //sum = a xor b xor c
+    Xor(a = a,b = b,out = temp);
+    Xor(a = c,b = temp,out =sum);
+    //carry = ab + (a+b)c
+    And(a = a,b = b,out = c10);
+    Or(a = a,b = b,out = tmp);
+    And(a = tmp,b = c,out = c11);
+    Or(a = c10,b = c11,out = carry);
+}

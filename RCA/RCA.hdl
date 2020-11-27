@@ -1,0 +1,53 @@
+/*  Full-adder:  designed to add three bits
+
+    Ripple Carry Adder is designed to add two n-bit numbers using n Full-adders
+
+    There are two n-bit numbers x and y. xk,yk are fed as input to (k+1)th Full-adder, the third input is the carry from the previous Full-adder.
+
+    Here n = 16   */
+  
+
+CHIP RCA
+{
+  IN x[16], y[16], cb, S;
+  OUT z[16], OF;
+
+  PARTS:
+    Xor(a=y[0], b=cb, out=w0);
+    Xor(a=y[1], b=cb, out=w1);
+    Xor(a=y[2], b=cb, out=w2);
+    Xor(a=y[3], b=cb, out=w3);
+    Xor(a=y[4], b=cb, out=w4);
+    Xor(a=y[5], b=cb, out=w5);
+    Xor(a=y[6], b=cb, out=w6);
+    Xor(a=y[7], b=cb, out=w7);
+    Xor(a=y[8], b=cb, out=w8);
+    Xor(a=y[9], b=cb, out=w9);
+    Xor(a=y[10], b=cb, out=w10);
+    Xor(a=y[11], b=cb, out=w11);
+    Xor(a=y[12], b=cb, out=w12);
+    Xor(a=y[13], b=cb, out=w13);
+    Xor(a=y[14], b=cb, out=w14);
+    Xor(a=y[15], b=cb, out=w15);
+
+
+  Fulladd(a=x[0], b=w0, c=cb, sum=z[0], carry=c1);
+  Fulladd(a=x[1], b=w1, c=c1, sum=z[1], carry=c2);
+  Fulladd(a=x[2], b=w2, c=c2, sum=z[2], carry=c3);
+  Fulladd(a=x[3], b=w3, c=c3, sum=z[3], carry=c4);
+  Fulladd(a=x[4], b=w4, c=c4, sum=z[4], carry=c5);
+  Fulladd(a=x[5], b=w5, c=c5, sum=z[5], carry=c6);
+  Fulladd(a=x[6], b=w6, c=c6, sum=z[6], carry=c7);
+  Fulladd(a=x[7], b=w7, c=c7, sum=z[7], carry=c8);
+  Fulladd(a=x[8], b=w8, c=c8, sum=z[8], carry=c9);
+  Fulladd(a=x[9], b=w9, c=c9, sum=z[9], carry=c10);
+  Fulladd(a=x[10], b=w10, c=c10, sum=z[10], carry=c11);
+  Fulladd(a=x[11], b=w11, c=c11, sum=z[11], carry=c12);
+  Fulladd(a=x[12], b=w12, c=c12, sum=z[12], carry=c13);
+  Fulladd(a=x[13], b=w13, c=c13, sum=z[13], carry=c14);
+  Fulladd(a=x[14], b=w14, c=c14, sum=z[14], carry=c15);
+  Fulladd(a=x[15], b=w15, c=c15, sum=z[15], carry=c16);
+
+  DetectOverFlow(c15=c15, c16=c16, cb=cb, S=S, OF=OF);
+
+}

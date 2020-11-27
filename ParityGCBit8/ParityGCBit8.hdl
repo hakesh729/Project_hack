@@ -1,0 +1,39 @@
+/*
+    ParityGCBit8...Parity Generator and Parity Checker for 8 bit (1 Bit Error Detection)
+    ie.,Detects Error if Error is in ONLY one Bit (Either Data Bit or Parity)
+        **More than one Errors are not detected and Give Output 0 or 1**
+        
+    Output:
+        (i)Generates Parity bit for Received Data bits (8 bit) - Pc
+        (ii)Checkes this Pc with parity bit of Transmitted Data (Pg)
+            (Note : pg is parity bit received on receiver side .so it can also an error bit.FORMALLY Pg may or may not be equal to x7 o x6 o x5 o x4 o x3... o x0 ,where o is xor) 
+            and return Z = 1 if Error in parity bit or received bits (only one bit)..
+                Z = 0 if No error in parity bit and received Data bits
+                    
+*/
+
+CHIP ParityGCBit8 {
+
+    IN y7,y6,y5,y4,y3,y2,y1,y0,x7,x6,x5,x4,x3,x2,x1,x0,Pg;  //x bit for Transmitting data bits and y for received bits
+                                                            //Pg = parity bit of Transmitted Data Bits
+    OUT Z;                      //Pc=y7 o y6 o y5 o y4 o y3 o y2 o y1 o y0 (where o = Xor )
+                                    
+                                    //Z = Pg o Pc
+
+    PARTS:
+
+Xor(a = y7,b = y6,out = tmp1);             //Applying Xor bit by bit to get Pc (parity generator at Receiver side)
+Xor(a = y5,b = tmp1,out = tmp2);
+Xor(a = y4,b = tmp2,out = tmp3);
+Xor(a = y3,b = tmp3,out = tmp4);
+Xor(a = y2,b = tmp4,out = tmp5);
+Xor(a = y1,b = tmp5,out = tmp6);
+Xor(a = y0,b = tmp6,out = Pc);
+
+
+Xor(a = Pg,b = Pc,out = Z);                //Checking For Error in either Parity bit or in Data bits
+
+    
+    
+    
+}

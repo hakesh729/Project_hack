@@ -1,0 +1,14 @@
+CHIP Carry
+{
+  IN a, b, c;
+  OUT out;
+ 
+  PARTS:
+  And(a=a, b=b, out=ab);
+  And(a=b, b=c, out=bc);
+  And(a=a, b=c, out=ac);
+
+  Or(a=ab, b=bc, out=w);
+  Or(a=w, b=ac, out=out);
+
+}

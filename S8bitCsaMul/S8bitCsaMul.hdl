@@ -1,0 +1,35 @@
+CHIP S8bitCsaMul {
+    IN a[8],b[8];
+    OUT out[16],OF;
+
+    PARTS:
+
+    And16(a[0..7] = a,a[8..15] = false,b[0] = b[0],b[1] = b[0],b[2] = b[0],b[3] = b[0],b[4] = b[0],b[5] = b[0],b[6] = b[0],b[7] = b[0],b[8..15] = false,out = pp0);
+    And16(a[0] = false,a[1..8] = a,a[9..15] = false,b[0] = false,b[1] = b[1],b[2] = b[1],b[3] = b[1],b[4] = b[1],b[5] = b[1],b[6] = b[1],b[7] = b[1],b[8] = b[1],b[9..15] = false,out = pp1);
+    And16(a[0..1] = false,a[2..9] = a,a[10..15] = false,b[0..1] = false,b[2] = b[2],b[3] = b[2],b[4] = b[2],b[5] = b[2],b[6] = b[2],b[7] = b[2],b[8] = b[2],b[9] = b[2],b[10..15] = false,out = pp2);
+    And16(a[0..2] = false,a[3..10] = a,a[11..15] = false,b[0..2] = false,b[3] = b[3],b[4] = b[3],b[5] = b[3],b[6] = b[3],b[7] = b[3],b[8] = b[3],b[9] = b[3],b[10] = b[3],b[11..15] = false,out = pp3);    
+    And16(a[0..3] = false,a[4..11] = a,a[12..15] = false,b[0..3] = false,b[4] = b[4],b[5] = b[4],b[6] = b[4],b[7] = b[4],b[8] = b[4],b[9] = b[4],b[10] = b[4],b[11] = b[4],b[12..15] = false,out = pp4);    
+    And16(a[0..4] = false,a[5..12] = a,a[13..15] = false,b[0..4] = false,b[5] = b[5],b[6] = b[5],b[7] = b[5],b[8] = b[5],b[9] = b[5],b[10] = b[5],b[11] = b[5],b[12] = b[5],b[13..15] = false,out = pp5);
+    And16(a[0..5] = false,a[6..13] = a,a[14..15] = false,b[0..5] =false,b[6] = b[6],b[7] = b[6],b[8] = b[6],b[9] = b[6],b[10] = b[6],b[11] = b[6],b[12] = b[6],b[13] = b[6],b[14..15] = false,out = pp6);
+
+    Xor8(a = a,b = true,out = complimA);
+    And16(a[0..6] = false,a[7..14] = complimA,a[15] = false,b[0..6] = false,b[7] = b[7],b[8] = b[7],b[9] = b[7],b[10] = b[7],b[11] = b[7],b[12] = b[7],b[13] = b[7],b[14] = b[7],b[15] = false,out = pp7);
+    And16(a[0..6] = false,a[7..14] = true,a[15] = false,b[0..6] = false,b[7] = b[7],b[8] = b[7],b[9] = b[7],b[10] = b[7],b[11] = b[7],b[12] = b[7],b[13] = b[7],b[14] = b[7],b[15] = false,out = pp8);
+
+    CSA(a = pp0,b = pp1,c = pp2,sum = s00,carry = c00);
+    CSA(a = pp3,b = pp4,c = pp5,sum = s01,carry = c01);
+    CSA(a = pp6,b = pp7,c = pp8,sum = s02,carry = c02);
+
+    CSA(a = s00,b = c00,c = s01,sum = s10,carry = c10);
+    CSA(a = c01,b = s02,c = c02,sum = s11,carry = c11);
+
+    CSA(a = s10,b = c10,c = s11,sum = s20,carry = c20);
+
+    CSA(a = c11,b = s20,c = c20,sum = s30,carry = c30);
+
+    Add16CLA(S = false,x[16] = s30,y[16] = c30,cb = false,z[16] = out,OF = waste);
+    
+    
+
+
+}

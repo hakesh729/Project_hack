@@ -1,0 +1,37 @@
+/* 8 to 3 way Priority Encoder
+ * out = 000 if a = 1
+ *     = 001 if a = 0 and b = 1
+       = 010 if a = 0 and b = 0 and c = 1
+       = 011 if a = 0 and b = 0 and c = 0 and d = 1
+       = 100 if a = 0 and b = 0 and c = 0 and d = 0 and e = 1
+       = 101 if a = 0 and b = 0 and c = 0 and d = 0 and e = 0 and f = 1
+       = 110 if a = 0 and b = 0 and c = 0 and d = 0 and e = 0 and f = 0 and g = 1
+       = 111 if a = 0 and b = 0 and c = 0 and d = 0 and e = 0 and f = 0 and g = 0 and h =1
+ * priority of pins a > b > c > d > e > f > g > h
+ */
+ CHIP PriorityEncoder8{
+     IN a,b,c,d,e,f,g,h;
+     OUT out[3];
+/*
+ * Description : Uses the priority Encoder 4-to-1 way for the first four pins and last four pins seperately
+   2. If there is an active request in the first four pins(verified using the valid bit) the code `xx` from the first
+   4to1 Encoder is appended with 0 at the start(done using the valid bit)
+   3. If there is an active request in the last four pins i.e,Valid bit is 0. The code from the second 4to1 Encoder is appended with 1 at the start (1xx),
+   [here xx is the code from the second 4-1 Way Priority encoder] 
+ *
+ * The selection of which code to select is made using MUX and the ~valid_bit as a select line
+ *
+ * Please verify the associated file submitted for more information on how exactly the chip is implemented
+ */
+     PARTS:
+     PriorityEncoder4(a=a,b=b,c=c,d=d,out[0] =abcd0,out[1] = abcd1);
+     Or(a=a, b=b, out=aPb);
+     Or(a=aPb , b=c, out=aPbPc);
+     Or(a= aPbPc, b=d, out=validbit);
+     PriorityEncoder4(a=e,b=f,c=g,d=h,out[0] =efgh0, out[1] = efgh1);
+     Not(in=validbit, out = notvalid);
+     Mux(a=abcd0, b=efgh0, sel=notvalid, out=out[0]);
+     Mux(a=abcd1, b=efgh1, sel=notvalid, out=out[1]);
+     Or(a=notvalid, b=false, out=out[2]);
+     
+ }

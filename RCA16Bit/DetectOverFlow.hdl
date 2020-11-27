@@ -1,0 +1,33 @@
+/**
+ * CHIP NAME : DetectOverFlow
+ *
+ * DESCRIPTION : Genertes the OverFlow bit which indicates overflow if any
+ *
+ * OVERFLOW CONDITION : When the resultant number cannot be expreseed in 16 bits i.e. Out of range
+ *
+ * LOGIC :
+   OF = (S.(c15 XOR c16)) + (~S.c16.~cb)  depending upon signed or not the adder will check the corresponding
+   overflow condition
+**/
+CHIP DetectOverFlow{
+    IN c15, c16, cb, S;
+    OUT OF;
+
+    PARTS:
+    Not(in=S, out=NotS);
+    Not(in=cb, out=Notcb);
+    
+    //~S.c16 Overflow for unsigned integers
+    //~S.c16.~cb  This makes sure that for unsigned subtraction over flow is not detected. Since there wont bw any overflow
+    // Since unsigned subtraction is always in bound
+    And3(a=NotS, b=c16, c=Notcb, out=w2);
+
+    Xor(a=c15, b=c16, out=w3);
+    And(a=w3, b=S, out=w4);      //S.(c15 XOR c16)  Overflow for signed integers
+
+    Or(a=w4, b=w2, out=OF);
+    
+    
+
+    
+}

@@ -1,0 +1,38 @@
+/* If s1=0,s0=0 then y=x0 
+
+   else if s1=0,s0=1 then y=x1 
+
+   else if s1=1,s0=0 then y=x2
+
+   else y=x3
+
+   The assignment operations mentioned above are all 2-bit. For example, "y=x0" means "for i=0,1  y[i] = x0[i]  */
+ 
+CHIP Mux4Way2Bit
+{
+  IN x0[2], x1[2], x2[2], x3[2], s1, s0;
+  OUT y[2];
+
+  PARTS:
+  Not(in=s1, out=nots1);
+  Not(in=s0, out=nots0);
+
+  And3(a=nots1, b=nots0, c=x0[0], out=w1);  // w1 = ~s1.~s0.x0[0]
+  And3(a=nots1, b=nots0, c=x0[1], out=w2);  // w2 = ~s1.~s0.x0[1]
+
+  And3(a=nots1, b=s0, c=x1[0], out=w3);     // w3 = ~s1.s0.x1[0]
+  And3(a=nots1, b=s0, c=x1[1], out=w4);     // w4 = ~s1.s0.x1[1]
+
+  And3(a=s1, b=nots0, c=x2[0], out=w5);     // w5 = s1.~s0.x2[0]
+  And3(a=s1, b=nots0, c=x2[1], out=w6);     // w6 = s1.~s0.x2[1]
+
+  And3(a=s1, b=s0, c=x3[0], out=w7);        // w7 = s1.s0.x3[0]
+  And3(a=s1, b=s0, c=x3[1], out=w8);        // w8 = s1.s0.x3[1]
+
+  Or4(a=w1, b=w3, c=w5, d=w7, out=y[0]);    // y[0] = ~s1.~s0.x0[0] + ~s1.s0.x1[0] + s1.~s0.x2[0] + s1.s0.x3[0]
+  Or4(a=w2, b=w4, c=w6, d=w8, out=y[1]);    // y[1] = ~s1.~s0.x0[1] + ~s1.s0.x1[1] + s1.~s0.x2[1] + s1.s0.x3[1]
+
+}
+
+  
+

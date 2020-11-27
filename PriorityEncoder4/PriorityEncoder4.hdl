@@ -1,0 +1,28 @@
+/* 4 to 2 way Priority Encoder
+ * out = 00 if a = 1
+ *     = 01 if a = 0 and b =1
+       = 10 if a = 0 and b =0 and c = 1
+       = 11 if a = 0 and b = 0 and c = 0 and d = 1
+ * priority of pins a > b > c > d
+ */
+
+/* Logic :
+ * out[0] = a'c' + a'b 
+ * out[1] = a'b'
+ */
+ CHIP PriorityEncoder4{
+     IN a,b,c,d;
+     OUT out[2];
+
+     PARTS:
+     Not(in=a, out=nota);
+     Not(in=b, out=notb);
+     Not(in=c, out=notc);
+
+     And(a=nota, b=notc, out=aNcN);
+     And(a=nota, b=b, out=aNb);
+     Or(a=aNcN, b=aNb, out=out[0]);
+
+     And(a=nota, b=notb, out=out[1]);
+     
+ }
