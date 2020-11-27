@@ -1,0 +1,9 @@
+CHIP Or4{
+    IN a,b,c,d;
+    OUT out;
+
+    PARTS:
+    Or(a=a, b=b, out=aPb);
+    Or(a=aPb, b=c, out=aPbPc);
+    Or(a=aPbPc, b=d, out=out);    
+}

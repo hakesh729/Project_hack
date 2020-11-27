@@ -1,0 +1,17 @@
+/**
+ * CHIP NAME : Or3
+ *
+ * DESCRIPTION : Performs or operation on 3 bits
+ *
+ * LOGIC :
+   out = a + b + c
+ */
+
+CHIP Or3{
+    IN a,b,c;
+    OUT out;
+
+    PARTS:
+    Or(a=a, b=b, out=aPb);
+    Or(a=aPb, b=c, out=out);
+}

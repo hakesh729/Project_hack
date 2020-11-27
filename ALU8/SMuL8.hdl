@@ -1,0 +1,79 @@
+/***
+Author : Hakesh D (cs19b017) @ Team 11
+SMuL8.hdl ... computes 8 bit signed multiplication and gives 8 bit signed result.
+Range of Multiplication : Both input and output are in range -128 to 127 (inclusive)
+Overflow : if output is in above range => OF = 0 .Otherwise , OF = 0 
+Non In-Built Chips : 
+    1 . BitCopy16 ... Takes a single bit and returns 16-bit bus of that bit.
+    2 . Xor8 ... performs Xor operation on two 8 bit numbers bit by bit.
+    3 . CSA ... Takes 3 16-Bit summands and output 2 16-bit buses (sum bits and carry bits)
+    *4 . Add16CLA .. HCLA for last addition. 
+    *5 . SMuL8OF .. Hdl file that detects overflow in signed multiplication and also truncate first 8 bits to give 8 bit answer
+***/
+
+CHIP SMuL8 {
+    IN a[8],b[8];
+    OUT out[8],OF;
+
+    PARTS:
+
+    //Generating 16 bits partial products pp0 to pp8 (8 + 1 partial products for signed multipication using csa)
+
+    //For sign extension purpose ,we are using a[7] bit till end of one of input 'a' of And16 (inbuit 16 bit And) as shown
+    //Also shifting of summands is done using a[0..i] = false for i = 0 1 .. 6 as input 'a' of And16
+    //BitCopy16 is used to generate 16-bit bus of each bit of b[i] to multiply it with a(another operand) using And16 gate.
+    //Formally , for i = 0 to 6 . if a , b are operands
+    //                ppi[j] = a[7] for i + 8 <= j <= 15
+    //                       = (a[j] and b[i]) for i <= j < i + 8
+    //                       = false for 0 <= j < i
+
+
+    BitCopy16(a = b[0],out = b0copy);
+    And16(a[0..7] = a,a[8] = a[7],a[9] = a[7],a[10] = a[7],a[11] = a[7],a[12] = a[7],a[13] = a[7],a[14] = a[7],a[15] = a[7],b = b0copy,out = pp0);
+    BitCopy16(a = b[1],out = b1copy);
+    And16(a[0] = false,a[1..8] = a,a[9] = a[7],a[10] = a[7],a[11] = a[7],a[12] = a[7],a[13] = a[7],a[14] = a[7],a[15] = a[7],b = b1copy,out = pp1);
+    BitCopy16(a = b[2],out = b2copy);
+    And16(a[0..1] = false,a[2..9] = a,a[10] = a[7],a[11] = a[7],a[12] = a[7],a[13] = a[7],a[14] = a[7],a[15] = a[7],b = b2copy,out = pp2);
+    BitCopy16(a = b[3],out = b3copy);
+    And16(a[0..2] = false,a[3..10] = a,a[11] = a[7],a[12] = a[7],a[13] = a[7],a[14] = a[7],a[15] = a[7],b = b3copy,out = pp3);
+    BitCopy16(a = b[4],out = b4copy);
+    And16(a[0..3] = false,a[4..11] = a,a[12] = a[7],a[13] = a[7],a[14] = a[7],a[15] = a[7],b = b4copy,out = pp4);
+    BitCopy16(a = b[5],out = b5copy);
+    And16(a[0..4] = false,a[5..12] = a,a[13] = a[7],a[14] = a[7],a[15] = a[7],b = b5copy,out = pp5);
+    BitCopy16(a = b[6],out = b6copy);
+    And16(a[0..5] = false,a[6..13] = a,a[14] = a[7],a[15] = a[7],b = b6copy,out = pp6);
+
+    //for pp7,pp8 ...
+    //pp7[i] = false for 0 <= i < 7
+    //       = (compliA[i] and b[7]) for 7 <= i < 15 .(compliA = 1's compliment of 'a' operand found using Xor8 gate)
+    //       = ~(compliA[7]) for i = 15 for sign extension
+    //pp8[i] = false for for 0 <= i <= 15 and i != 7
+    //       = true for i = 7 (for 2's compliment from 1's compliment).
+    BitCopy16(a = b[7],out = b7copy);
+    Xor8(a = a,b = true,out = compliA);
+    Not(in = a[7],out = nota7);
+    And16(a[0..6] = false,a[7..14] = compliA,a[15] = nota7,b = b7copy,out = pp7);
+    //pp8
+    And16(a[0..6] = false,a[7] = true,a[8..15] = false,b = b7copy,out = pp8);
+
+    //3 - to - 2 summand reducer using csa .
+    //sij = ith sum 16-bit produced in ith level of csa .
+    //cij = jth carry 16-bit produced in ith level of csa.
+    CSA(a = pp0,b = pp1,c = pp2,sum = s00,carry = c00);
+    CSA(a = pp3,b = pp4,c = pp5,sum = s01,carry = c01);
+    CSA(a = pp6,b = pp7,c = pp8,sum = s02,carry = c02);
+
+    CSA(a = s00,b = c00,c = s01,sum = s10,carry = c10);
+    CSA(a = c01,b = s02,c = c02,sum = s11,carry = c11);
+
+    CSA(a = s10,b = c10,c = s11,sum = s20,carry = c20);
+
+    CSA(a = c11,b = s20,c = c20,sum = s30,carry = c30);
+
+    //Summing up last two summands using HCLA and producing 16 product bits
+    Add16CLA(x = s30,y = c30,cb = false,S = false,z = out16,OF = waste);
+
+    //Overflow detection and Trucate the out16 for last  8 - bit bus which is required multiplication answer.
+    SMuL8OF(outbig = out16,signBit1 = a[7],signBit2 = b[7],out = out,OF = OF);
+    
+}

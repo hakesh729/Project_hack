@@ -1,0 +1,46 @@
+/* If s0=0 then y=x0 
+
+   else y=x1 
+
+   The assignment operations mentioned above are all 8-bit. For example, "y=x0" means for i=0,1,..,7  y[i] = x0[i]  */
+
+
+CHIP Mux2Way8Bit
+{
+  IN x1[8], x0[8], s0;
+  OUT y[8];
+
+  PARTS:
+
+  Not(in=s0, out=nots0);
+
+  And(a=nots0, b=x0[0], out=w1);   // w1 = ~s0.x0[0]
+  And(a=nots0, b=x0[1], out=w2);   // w2 = ~s0.x0[1]
+  And(a=nots0, b=x0[2], out=w3);   // w3 = ~s0.x0[2]
+  And(a=nots0, b=x0[3], out=w4);   // w4 = ~s0.x0[3]
+  And(a=nots0, b=x0[4], out=w5);   // w5 = ~s0.x0[4]
+  And(a=nots0, b=x0[5], out=w6);   // w6 = ~s0.x0[5]
+  And(a=nots0, b=x0[6], out=w7);   // w7 = ~s0.x0[6]
+  And(a=nots0, b=x0[7], out=w8);   // w8 = ~s0.x0[7]
+
+  And(a=s0, b=x1[0], out=w9);      // w9 = s0.x1[0]
+  And(a=s0, b=x1[1], out=w10);     // w10 = s0.x1[1]
+  And(a=s0, b=x1[2], out=w11);     // w11 = s0.x1[2]
+  And(a=s0, b=x1[3], out=w12);     // w12 = s0.x1[3]
+  And(a=s0, b=x1[4], out=w13);     // w13 = s0.x1[4]
+  And(a=s0, b=x1[5], out=w14);     // w14 = s0.x1[5]
+  And(a=s0, b=x1[6], out=w15);     // w15 = s0.x1[6]
+  And(a=s0, b=x1[7], out=w16);     // w16 = s0.x1[7]
+
+  Or(a=w1, b=w9, out=y[0]);        // y[0] = ~s0.x0[0] + s0.x1[0]
+  Or(a=w2, b=w10, out=y[1]);       // y[1] = ~s0.x0[1] + s0.x1[1]
+  Or(a=w3, b=w11, out=y[2]);       // y[2] = ~s0.x0[2] + s0.x1[2]
+  Or(a=w4, b=w12, out=y[3]);       // y[3] = ~s0.x0[3] + s0.x1[3]
+  Or(a=w5, b=w13, out=y[4]);       // y[4] = ~s0.x0[4] + s0.x1[4]
+  Or(a=w6, b=w14, out=y[5]);       // y[5] = ~s0.x0[5] + s0.x1[5]
+  Or(a=w7, b=w15, out=y[6]);       // y[6] = ~s0.x0[6] + s0.x1[6]
+  Or(a=w8, b=w16, out=y[7]);       // y[7] = ~s0.x0[7] + s0.x1[7]
+
+}
+
+  

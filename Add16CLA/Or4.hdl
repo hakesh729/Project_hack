@@ -1,0 +1,20 @@
+/* Or4
+ *
+ * Takes Four inputs and performs and on the four inputs 
+ *
+ * Logic : out = a + b + c + d
+ *
+ * out = 0 if a=b=c=d=0 1 otherwise
+ */
+
+
+
+CHIP Or4{
+    IN a,b,c,d;
+    OUT out;
+
+    PARTS:
+    Or(a=a, b=b, out=aPb);
+    Or(a=aPb, b=c, out=aPbPc);
+    Or(a=aPbPc, b=d, out=out);    
+}

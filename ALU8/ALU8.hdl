@@ -1,0 +1,64 @@
+/****************
+Designer : Hakesh(cs19b017) @ Team 11
+ALU8.hdl .. This chip performes And,Or,Xor,Addition,Subtraction,Multiplication for signed/unsigned 8 bit numbers
+            And detects overflow if any.
+            Also compares x,y if input 8 bits are equal or not.
+
+Input : 1 . opcode[3] ... Indicates which operation to be done.
+        2 . S ... Indicates whether input numbers are signed (1) or unsigned (0)
+        3 . x[8] , y[8] = 8 bit operands.
+Output : 1 . z[8] = x[8] (opcode) y[8]
+         2 . OF = 1 if any oveflow error occurs
+         3 . EQ = 1 if x == y .otherwise 0.
+
+opcode for operation : 
+    000 - No operation
+    001 - And 
+    010 - Or
+    011 - Xor
+    100 - Addition
+    101 - Subtraction (x - y)
+    110 - Unsigned Multiplication.
+    111 - Signed Multiplication.
+
+Note : overflow error in unsigned subtraction is NOT detected.So x >= y must hold in that case. 
+       Chip uses "S" for only addition/subtraction.It is not involved in multiplication.
+****************/
+
+CHIP ALU8 {
+    IN x[8],y[8],opcode[3],S;
+    OUT z[8],EQ,OF;
+
+    PARTS:
+    //And , Or , Xor operations.
+    And16(a[0..7] = x,b[0..7] = y,out[0..7] = out1);
+    Or16(a[0..7] = x,b[0..7] = y,out[0..7] = out2);
+    Xor8(a = x,b = y,out = out3);
+
+    //Addition/subtraction(using HCLA) , Unsigned Multiplication(using CSA unsigned),Signed Multiplication(using CSA signed).
+    Add16CLA(x[0..7] = false,x[8..15] = x,y[0..7] = false,y[8..15] = y,cb = opcode[0],S = S,z[8..15] = out45,OF = of1);
+    Mul8(a = x,b = y,out = out6,OF = of2);
+    SMuL8(a = x,b = y,out = out7,OF = of3);
+
+    //Assembling all chips using MUX .
+    Mux4Way8Bit(x0 = false,x1 = out1,x2 = out2,x3 = out3,s1 = opcode[1],s0 = opcode[0],y = part1);
+    Mux4Way8Bit(x0 = out45,x1 = out45,x2 = out6,x3 = out7,s1 = opcode[1],s0 = opcode[0],y = part2);
+
+    Mux2Way8Bit(x0 = part1,x1 = part2,s0 = opcode[2],y = z);
+
+    //Compares x and y 
+    Comparator8Bit(x = x,y = y,z = EQ);
+
+    //Overflow Detection 
+    //let op be opcode for formula convience
+    //OF = op[2].(~op[1]).of1 + op[2].op[1].(~op[0]).of2 + op[2].op[1].op[0].of3
+    //      (add/sub overflow)      (unsigned MUl overflow)        (signed MUL overflow)
+    Not(in = opcode[1],out = NotOpcode1);
+    Not(in = opcode[0],out = NotOpcode0);
+    And8Way(in[0] = opcode[2],in[1] = NotOpcode1,in[2] = of1,in[3..7] = true,out = OF00);
+    And8Way(in[0..1] = opcode[1..2],in[2] = NotOpcode0,in[3] = of2,in[4..7] = true,out = OF01);
+    And8Way(in[0..2] = opcode,in[3] = of3,in[4..7] = true,out = OF02);
+
+    Or8Way(in[0] = OF00,in[1] = OF01,in[2] = OF02,in[3..7] = false,out = OF);
+
+}

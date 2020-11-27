@@ -1,0 +1,22 @@
+/**
+ * CHIP NAME : HigherPropagate
+ *
+ * DESCRIPTION : Generates Higher Level( First level here ) propagate Terms
+ *
+ * LOGIC :
+   P0 = (p1.p2.p3.p0) 
+   P1 = (p5.p6.p7.p4) 
+   P2 = (p9.p10.p11.p8) 
+   P3 = (p13.p14.p15.p12) 
+*/
+
+CHIP HigherPropagate{
+    IN p[16], g[16];
+    OUT P0,P1,P2,P3;
+
+    PARTS:
+    And4(a=p[0], b=p[1], c=p[2], d=p[3], out =P0);
+    And4(a=p[4], b=p[5], c=p[6], d=p[7], out =P1);
+    And4(a=p[8], b=p[9], c=p[10], d=p[11], out =P2);
+    And4(a=p[12], b=p[13], c=p[14], d=p[15], out =P3);
+}

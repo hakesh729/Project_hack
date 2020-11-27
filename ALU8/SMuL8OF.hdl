@@ -1,0 +1,31 @@
+//SMuL8OF .. Detects Overflow while multiplication of two signed 8 bits and returns last 8 bit of outbig[16].
+//which is our required 8 bit multiplication answer,
+//Non Inbuilt chip : Xor8 .. finds Xor of two 8 bits bit by bit and returns 8 bit xor result.  
+ CHIP SMuL8OF {
+     //signbit1 and signbit2 are the sign bits of two operands 
+     //Outbig[16] is 16 bit bus generated at last of muliplication using csa
+    IN outbig[16],signBit1,signBit2;
+    OUT out[8] , OF;
+
+    PARTS:
+    
+    //Overflow condition for 8 bit signed multiplication is 
+    //Let pi represents outbig[i] for convience of formula
+    // OF = (signbit1 xorn signbit2).(p7 + p8 .. + p15) + (signbit1 xor signbit2).(~p7 + ~p8 .. + ~p15).
+    Xor(a = signBit1,b = signBit2,out = of00);
+    And8Way(in = outbig[8..15],out = tmpof01);
+    And(a = outbig[7],b = tmpof01,out = tempof01);
+    Not(in = tempof01,out = of01);
+    And(a = of00,b = of01,out = of0);
+
+    Not(in = of00,out = of10);
+    Or8Way(in = outbig[8..15],out = tempof11);
+    Or(a = tempof11,b = outbig[7],out = of11);
+    And(a = of10,b = of11,out = of1);
+
+    Or(a = of0,b = of1,out = OF);
+
+    //Truncating first 8 bits of outbig[16]
+    Xor8(a = outbig[0..7],b = false,out = out);
+    
+}

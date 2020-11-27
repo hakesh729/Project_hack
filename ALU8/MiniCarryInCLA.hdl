@@ -1,0 +1,31 @@
+/* CHIP NAME : MiniCarryInCLA
+ * 
+ * DESCRIPTION : Given Ci where i = 0/4/8/12 , generates Cx where x = i+1 , i+2 , i+3
+ * 
+ * LOGIC : for i = 0 
+   C1 = (p0.c0) + g0
+   C2 = (p0.p1.c0) + (p1.g0) + g1
+   C3 = (p0.p1.p2.c0) + (p2.p1) + (p2.g1) + g2
+*/
+
+
+CHIP MiniCarryInCLA{
+    IN c , p[4], g[4];
+    OUT Ca, Cb , Cc;
+
+    PARTS:
+    //Ca
+    And(a=p[0], b=c, out=w1);
+    Or(a=w1, b=g[0], out=Ca);
+
+    //Cb
+    And3(a= p[0], b=p[1] , c=c , out = w2);
+    And(a=p[1], b=g[0], out=w3);
+    Or3(a=w2, b=w3, c=g[1], out =Cb);
+
+    //Cc
+    And4(a=p[0] , b =p[1], c =p[2] , d =c  , out =w4 );
+    And3(a= p[2], b=p[1] , c=g[0] , out =w5 );
+    And(a=p[2], b=g[1], out=w6);
+    Or4(a=w4 , b=w5 , c =w6 , d=g[2]  , out =Cc );    
+}

@@ -1,0 +1,31 @@
+/**
+ * CHIP NAME : CarryInCLA
+ *
+ * DESCRIPTION : Given, ci where i = 0,4,8,12,16
+                 This generates ci where i = 1,2,3 ; 5,6,7 ; 9,10,11 ; 13,14,15
+ * 
+ * LOGIC : 
+   Uses another module called MiniCarryCLA which genrates Ci where i = x+1,x+2,x+3 from Cx where x = 0,4,8,12
+*/ 
+CHIP CarryInCLA{
+    IN p[16], g[16], c0 , c4, c8, c12 , c16;
+    OUT C[16];
+
+    PARTS:
+    MiniCarryInCLA(c= c0, p=p[0..3] , g=g[0..3] ,Ca=C[1] , Cb =C[2] ,Cc=C[3]);
+    
+    MiniCarryInCLA(c=c4, p=p[4..7] , g=g[4..7] ,Ca=C[5] , Cb =C[6] ,Cc=C[7]);
+    
+    MiniCarryInCLA(c=c8 , p=p[8..11] , g=g[8..11] ,Ca=C[9] , Cb =C[10] ,Cc=C[11]);
+
+    MiniCarryInCLA(c=c12 , p=p[12..15] , g=g[12..15] ,Ca=C[13] , Cb =C[14], Cc=C[15]);
+
+    Xor(a=c0, b=false, out=C[0]);
+
+    Xor(a=c4, b=false, out=C[4]);
+    
+    Xor(a=c8, b=false, out=C[8]);
+    
+    Xor(a=c12, b=false, out=C[12]);
+
+}

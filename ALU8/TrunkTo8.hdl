@@ -1,0 +1,28 @@
+/**
+ * @Team 11
+ * @member Sathvik
+ * 
+ * CHIP NAME : TrunkTo8
+ * 
+ * DESCRIPTION :    Uses the 16 bit output from the 16bit adder.To detect overFlow.
+ *
+ * OF = p8 + p9 + p10 + p11 + p12 + p13 + p14 + p15
+ * OverFlow detection 
+ */
+CHIP TrunkTo8{
+    IN outbig[16] ;
+    OUT out[8] , OF;
+
+    PARTS:
+    Or8Way(in=outbig[8..15], out=OF);
+    // Copy the first 8 bits to the output
+    Xor(a=outbig[0], b=false, out=out[0]);
+    Xor(a=outbig[1], b=false, out=out[1]);
+    Xor(a=outbig[2], b=false, out=out[2]);
+    Xor(a=outbig[3], b=false, out=out[3]);
+    Xor(a=outbig[4], b=false, out=out[4]);
+    Xor(a=outbig[5], b=false, out=out[5]);
+    Xor(a=outbig[6], b=false, out=out[6]);
+    Xor(a=outbig[7], b=false, out=out[7]);
+    
+}

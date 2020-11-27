@@ -1,0 +1,36 @@
+/*  if for i=0,1...,7 x[i] = y[i] then z = 1
+ 
+    else z = 0  */
+
+    
+
+CHIP Comparator8Bit
+{
+  IN x[8], y[8];
+  OUT z;
+
+  PARTS:
+  Xor(a=x[0], b=y[0], out=w1);
+  Xor(a=x[1], b=y[1], out=w2);
+  Xor(a=x[2], b=y[2], out=w3);
+  Xor(a=x[3], b=y[3], out=w4);
+  Xor(a=x[4], b=y[4], out=w5);
+  Xor(a=x[5], b=y[5], out=w6);
+  Xor(a=x[6], b=y[6], out=w7);
+  Xor(a=x[7], b=y[7], out=w8);
+
+  Not(in=w1, out=notw1);
+  Not(in=w2, out=notw2);
+  Not(in=w3, out=notw3);
+  Not(in=w4, out=notw4);
+  Not(in=w5, out=notw5);
+  Not(in=w6, out=notw6);
+  Not(in=w7, out=notw7);
+  Not(in=w8, out=notw8);
+
+  And4(a=notw1, b=notw2, c=notw3, d=notw4, out=notw1.notw2.notw3.notw4);
+  And4(a=notw5, b=notw6, c=notw7, d=notw8, out=notw5.notw6.notw7.notw8);
+
+  And(a=notw1.notw2.notw3.notw4, b=notw5.notw6.notw7.notw8, out=z);
+
+}
